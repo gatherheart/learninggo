@@ -573,5 +573,97 @@
         "answer": 1
       }
     ]
+  },
+  {
+    "id": "27_goroutine_leaks",
+    "bin": "27_goroutine_leaks",
+    "topic": "concurrency",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"worker waiting forever\")\n    fmt.Println(\"leak risk\")\n}",
+    "expectedOutput": "worker waiting forever\nleak risk\n",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "28_backpressure",
+    "bin": "28_backpressure",
+    "topic": "channels",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"producer faster than consumer\")\n    fmt.Println(\"queue grows\")\n}",
+    "expectedOutput": "producer faster than consumer\nqueue grows\n",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 1
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 0
+      }
+    ]
+  },
+  {
+    "id": "30_retry_idempotency",
+    "bin": "30_retry_idempotency",
+    "topic": "errors",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"retry request\")\n    fmt.Println(\"avoid duplicate side effects\")\n}",
+    "expectedOutput": "retry request\navoid duplicate side effects\n",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "31_observability",
+    "bin": "31_observability",
+    "topic": "tooling",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"trace request\")\n    fmt.Println(\"measure latency\")\n}",
+    "expectedOutput": "trace request\nmeasure latency\n",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 1
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 0
+      }
+    ]
   }
 ]

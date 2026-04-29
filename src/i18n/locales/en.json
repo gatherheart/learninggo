@@ -983,6 +983,154 @@
           "answerReason": "Use boundary-crossing tools deliberately and locally, not as the default architecture."
         }
       }
+    },
+    "27_goroutine_leaks": {
+      "title": "Goroutine Leaks",
+      "description": "A goroutine can leak if it waits forever on a channel, timer, or blocked send with no cancellation path.\n\n```go\ngo worker(ch)\n```\n\nConcurrency bugs are often about lifecycles, not only syntax.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "What is a goroutine leak?",
+          "options": [
+            "A goroutine that remains blocked or alive with no useful completion path.",
+            "A goroutine that prints too much.",
+            "A goroutine that uses pointers."
+          ],
+          "explanations": [
+            "Correct. The problem is lifecycle and resource retention.",
+            "Printing is not the core issue.",
+            "Pointers are unrelated."
+          ],
+          "answerReason": "A leaked goroutine keeps existing after its useful work should have ended."
+        },
+        "q3": {
+          "question": "What usually prevents these leaks?",
+          "options": [
+            "Only bigger buffers.",
+            "Only more CPU cores.",
+            "Cancellation, shutdown paths, and clear ownership of who stops the work."
+          ],
+          "explanations": [
+            "Buffers alone do not solve lifecycle design.",
+            "More CPU does not fix stuck logic.",
+            "Correct. You need an exit path."
+          ],
+          "answerReason": "Well-designed goroutines know when and how they end."
+        }
+      }
+    },
+    "28_backpressure": {
+      "title": "Backpressure in Channel Pipelines",
+      "description": "If producers outrun consumers, buffered channels only delay the problem.\n\n```go\nproducer -> channel -> consumer\n```\n\nReal systems need flow control, rate limits, or load shedding.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "Why is a bigger buffer not always a real fix?",
+          "options": [
+            "Because channels cannot buffer values.",
+            "Because buffering can postpone overload without solving a sustained rate mismatch.",
+            "Because Go forbids buffered channels in production."
+          ],
+          "explanations": [
+            "Channels can be buffered.",
+            "Correct. Buffers absorb bursts but do not erase mismatched throughput.",
+            "That rule does not exist."
+          ],
+          "answerReason": "Backpressure is about sustained throughput balance, not temporary storage alone."
+        },
+        "q3": {
+          "question": "What does backpressure protect?",
+          "options": [
+            "System stability when downstream work cannot keep up.",
+            "Only the number of imports.",
+            "How Go formats code."
+          ],
+          "explanations": [
+            "Correct. It keeps the system from growing without bound.",
+            "Imports are unrelated.",
+            "Formatting is unrelated."
+          ],
+          "answerReason": "Without backpressure, overload becomes unbounded queues or blocked work."
+        }
+      }
+    },
+    "30_retry_idempotency": {
+      "title": "Retries and Idempotency",
+      "description": "Retries can improve resilience, but only if the underlying operation can be repeated safely or deduplicated.\n\n```go\nresp, err := client.Do(req)\n```\n\nReliability work is as much about semantics as transport errors.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "Why does idempotency matter for retries?",
+          "options": [
+            "Because a repeated request can otherwise duplicate side effects.",
+            "Because retries disable TCP.",
+            "Because Go requires every function to be idempotent."
+          ],
+          "explanations": [
+            "Correct. Retries can apply the same action more than once.",
+            "TCP is unrelated here.",
+            "Go does not require that rule."
+          ],
+          "answerReason": "Safe retry design depends on operation semantics, not only client code."
+        },
+        "q3": {
+          "question": "What is the architecture lesson?",
+          "options": [
+            "Retries are always safe.",
+            "Retries only matter for databases.",
+            "Reliability features must match the semantics of the work being repeated."
+          ],
+          "explanations": [
+            "That is false.",
+            "They matter in many places.",
+            "Correct. Semantics drive safe recovery design."
+          ],
+          "answerReason": "A transport retry can become a business bug if semantics are ignored."
+        }
+      }
+    },
+    "31_observability": {
+      "title": "Observability Basics",
+      "description": "Production Go services need logs, metrics, and traces that answer real debugging questions.\n\n```go\nlog, metrics, trace\n```\n\nObservability is part of architecture, not only a library add-on.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "Why are metrics and traces not optional in serious services?",
+          "options": [
+            "Because Go programs cannot run without them.",
+            "Because production failures need evidence about latency, errors, and request flow.",
+            "Because they make binaries smaller."
+          ],
+          "explanations": [
+            "Go runs without them, but you lose visibility.",
+            "Correct. They make live systems explainable.",
+            "Binary size is unrelated."
+          ],
+          "answerReason": "Without observability, debugging production behavior becomes guesswork."
+        },
+        "q3": {
+          "question": "What does tracing help answer well?",
+          "options": [
+            "Where time was spent across service boundaries.",
+            "Whether the compiler used registers.",
+            "How many tabs are in a file."
+          ],
+          "explanations": [
+            "Correct. Tracing reveals end-to-end request flow.",
+            "Compiler register use is a different concern.",
+            "Whitespace is unrelated."
+          ],
+          "answerReason": "Tracing is about distributed request flow and latency attribution."
+        }
+      }
     }
   }
 }
