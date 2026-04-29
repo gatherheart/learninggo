@@ -1,0 +1,235 @@
+{
+  "ui": {
+    "appName": "Learning Go",
+    "lessons": "Lessons",
+    "quizzes": "Quizzes",
+    "search": "Search lessons, topics, or ids",
+    "keyboardHint": "Finish each lesson quiz set to unlock the next lesson.",
+    "heroTitle": "Learn Go through small programs that surface the language model directly.",
+    "heroBody": "This track covers values, slices, maps, structs, interfaces, concurrency, channels, and context. Each lesson keeps the code short so you can focus on what the runtime and type system are really doing.",
+    "startLearning": "Start learning",
+    "lessonNotFound": "Lesson not found.",
+    "courseComplete": "Every lesson is complete.",
+    "lessonComplete": "Lesson complete. The next lesson is now unlocked.",
+    "correct": "Correct!",
+    "tryAgain": "Try again",
+    "check": "Check",
+    "predictPlaceholder": "Type the expected output here",
+    "incorrectReasonFallback": "That choice does not match what the code or concept is doing.",
+    "resetCode": "Reset code",
+    "openWorkspace": "Open Go Playground",
+    "workspaceName": "Go Playground",
+    "workspaceFile": "main.go",
+    "workspaceNote": "This editor is for reading and tweaking the example. Use the external workspace for full execution and larger experiments.",
+    "output": "Expected output",
+    "outputReady": "Read the code, then verify your answer in the quiz.",
+    "outputPlaceholder": "Output is shown by the lesson metadata below.",
+    "theme": "Theme",
+    "howItWorks1": "Open a lesson and read the explanation next to a focused code sample.",
+    "howItWorks2": "Use the embedded editor to annotate or tweak the snippet while keeping the lesson context nearby.",
+    "howItWorks3": "Finish the quiz set, then continue in the external workspace when you want a larger sandbox.",
+    "previewLabel": "preview",
+    "previewStatus": "Follow how values, references, and goroutines behave under simple examples.",
+    "homeTip": "Edit examples here, then move to the official Go Playground when you want to run or expand them.",
+    "howItWorks": "How it works",
+    "lessonList": "Lesson list",
+    "progress": "Progress",
+    "learnByDoing": "Learn by doing"
+  },
+  "topics": {
+    "basics": "basics",
+    "slices": "slices",
+    "maps": "maps",
+    "structs": "structs",
+    "interfaces": "interfaces",
+    "concurrency": "concurrency",
+    "channels": "channels",
+    "context": "context"
+  },
+  "lessons": {
+    "01_go_main": {
+      "title": "Package Main and Entry Point",
+      "description": "An executable Go program uses `package main` and a `main()` function.\n\n```go\npackage main\n\nfunc main() {\n    fmt.Println(\"hi\")\n}\n```",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why must an executable use `package main`?",
+          "options": [
+            "The Go tool looks for a `main` package with a `main` function as the program entry.",
+            "Only `package main` can import the standard library.",
+            "It forces every variable to be global."
+          ],
+          "explanations": [
+            "Yes. That is how the toolchain identifies an executable program.",
+            "Any package can import the standard library.",
+            "Package choice does not make variables global."
+          ],
+          "answerReason": "A runnable binary needs one entry package and one entry function the toolchain can invoke."
+        }
+      }
+    },
+    "02_slices": {
+      "title": "Slice Views over Arrays",
+      "description": "A slice is a small descriptor over an underlying array. It tracks pointer, length, and capacity.\n\n```go\nnums := []int{1, 2, 3}\npart := nums[:2]\n```\n\nMutating the shared region through one slice is visible through another.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "Why does changing `part[0]` affect `nums[0]`?",
+          "options": [
+            "The slice still points to the same backing array.",
+            "Go automatically synchronizes equal indexes across all slices.",
+            "Slicing copies the whole array and merges it back later."
+          ],
+          "explanations": [
+            "Correct. The view shares storage with the original array segment.",
+            "There is no special sync mechanism like that.",
+            "Basic slicing does not copy the entire array."
+          ],
+          "answerReason": "A slice is metadata around shared storage, not an independent container by default."
+        }
+      }
+    },
+    "03_maps": {
+      "title": "Map Lookup Semantics",
+      "description": "Map lookups can return a zero value and a boolean presence flag.\n\n```go\nv, ok := m[\"key\"]\n```\n\nThat second result is the safe way to distinguish missing keys from stored zero values.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "Why is the `ok` result useful?",
+          "options": [
+            "It separates a missing key from a present key whose value happens to be the zero value.",
+            "It makes the lookup faster by skipping hashing.",
+            "It converts the map into an ordered structure."
+          ],
+          "explanations": [
+            "Yes. Presence and value are distinct facts.",
+            "Hashing still happens.",
+            "Maps remain unordered."
+          ],
+          "answerReason": "Without `ok`, you cannot tell whether `0` means absent or explicitly stored."
+        }
+      }
+    },
+    "04_struct_methods": {
+      "title": "Methods on Struct Receivers",
+      "description": "Go methods attach behavior to a receiver type.\n\n```go\ntype Counter struct { value int }\n\nfunc (c *Counter) Inc() { c.value++ }\n```\n\nPointer receivers are used when a method must mutate the value or avoid copying large structs.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "Why is the receiver a pointer here?",
+          "options": [
+            "The method needs to mutate the original struct value.",
+            "Go requires all method receivers to be pointers.",
+            "Only pointer receivers can call `fmt.Println`."
+          ],
+          "explanations": [
+            "Correct. Mutation must affect the same struct instance.",
+            "Value receivers also exist.",
+            "Printing has nothing to do with receiver kind."
+          ],
+          "answerReason": "If `Inc` used a value receiver, it would increment a copy instead of the caller-owned value."
+        }
+      }
+    },
+    "05_interfaces": {
+      "title": "Interfaces Describe Behavior",
+      "description": "A Go interface is satisfied implicitly by method sets.\n\n```go\ntype Runner interface {\n    Run() string\n}\n```\n\nThere is no `implements` keyword; the type just needs the required methods.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "How does `Job` satisfy `Runner`?",
+          "options": [
+            "It has the required `Run() string` method, so it satisfies the interface implicitly.",
+            "It must declare `implements Runner` in the type definition.",
+            "Interfaces are satisfied only at runtime through reflection."
+          ],
+          "explanations": [
+            "Yes. Go uses structural typing for interfaces.",
+            "Go has no `implements` keyword.",
+            "The type checker verifies interface satisfaction statically."
+          ],
+          "answerReason": "Implicit satisfaction keeps interfaces lightweight and lets consumers define the behavior they need."
+        }
+      }
+    },
+    "06_goroutines": {
+      "title": "Goroutines and Concurrent Work",
+      "description": "A goroutine is a lightweight concurrent function execution.\n\n```go\ngo work()\n```\n\nStarting one does not block the caller. Coordination still needs channels, sync primitives, or context.",
+      "quizzes": {
+        "q1": {
+          "question": "What does this program print with the wait group in place?"
+        },
+        "q2": {
+          "question": "Why is `WaitGroup` used here?",
+          "options": [
+            "To keep `main` alive until the goroutine finishes.",
+            "To make the goroutine run on a specific CPU core.",
+            "To share local variables by reference automatically."
+          ],
+          "explanations": [
+            "Correct. Without synchronization, `main` could exit too early.",
+            "Core placement is not what `WaitGroup` does.",
+            "Variable capture is a different language behavior."
+          ],
+          "answerReason": "Concurrency starts work; synchronization decides when that work must finish before exiting or continuing."
+        }
+      }
+    },
+    "07_channels": {
+      "title": "Channels Coordinate Ownership",
+      "description": "Channels are typed conduits for communication between goroutines.\n\n```go\nch := make(chan int)\nch <- 1\nvalue := <-ch\n```\n\nThey help structure concurrent ownership transfer instead of sharing mutable state freely.",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed?"
+        },
+        "q2": {
+          "question": "What is the main role of a channel?",
+          "options": [
+            "It coordinates communication and handoff between goroutines.",
+            "It sorts messages before they are received.",
+            "It guarantees all goroutines run sequentially."
+          ],
+          "explanations": [
+            "Yes. Communication is the core model.",
+            "Channels do not sort values.",
+            "Channels can synchronize, but they do not make the whole program sequential."
+          ],
+          "answerReason": "Go encourages structuring concurrency around communication, with channels making handoff explicit."
+        }
+      }
+    },
+    "08_context_timeout": {
+      "title": "Context Cancellation and Timeouts",
+      "description": "A `context.Context` carries cancellation, deadlines, and request-scoped values across call boundaries.\n\n```go\nctx, cancel := context.WithTimeout(parent, time.Second)\ndefer cancel()\n```",
+      "quizzes": {
+        "q1": {
+          "question": "What is printed after `cancel()`?"
+        },
+        "q2": {
+          "question": "Why pass `context.Context` through a request path?",
+          "options": [
+            "It lets downstream work observe cancellation and deadlines consistently.",
+            "It replaces function parameters for normal business data.",
+            "It forces synchronous execution."
+          ],
+          "explanations": [
+            "Correct. It propagates lifecycle signals.",
+            "Regular data should still use normal parameters or structs.",
+            "Context does not force synchronous behavior."
+          ],
+          "answerReason": "Cancellation only helps if every layer can see the same signal and stop work cooperatively."
+        }
+      }
+    }
+  }
+}
