@@ -1,0 +1,186 @@
+[
+  {
+    "id": "01_go_main",
+    "bin": "01_go_main",
+    "topic": "basics",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"boot\")\n    fmt.Println(2 + 3)\n}",
+    "expectedOutput": "boot\n5",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "02_slices",
+    "bin": "02_slices",
+    "topic": "slices",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    nums := []int{1, 2, 3}\n    part := nums[:2]\n    part[0] = 9\n    fmt.Println(nums)\n}",
+    "expectedOutput": "[9 2 3]",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 1
+      }
+    ]
+  },
+  {
+    "id": "03_maps",
+    "bin": "03_maps",
+    "topic": "maps",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    counts := map[string]int{\"go\": 2}\n    value, ok := counts[\"rust\"]\n    fmt.Println(value)\n    fmt.Println(ok)\n}",
+    "expectedOutput": "0\nfalse",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 0
+      }
+    ]
+  },
+  {
+    "id": "04_struct_methods",
+    "bin": "04_struct_methods",
+    "topic": "structs",
+    "code": "package main\n\nimport \"fmt\"\n\ntype Counter struct {\n    value int\n}\n\nfunc (c *Counter) Inc() {\n    c.value++\n}\n\nfunc main() {\n    c := Counter{}\n    c.Inc()\n    fmt.Println(c.value)\n}",
+    "expectedOutput": "1",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "05_interfaces",
+    "bin": "05_interfaces",
+    "topic": "interfaces",
+    "code": "package main\n\nimport \"fmt\"\n\ntype Runner interface {\n    Run() string\n}\n\ntype Job struct{}\n\nfunc (Job) Run() string {\n    return \"done\"\n}\n\nfunc main() {\n    var r Runner = Job{}\n    fmt.Println(r.Run())\n}",
+    "expectedOutput": "done",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 1
+      }
+    ]
+  },
+  {
+    "id": "06_goroutines",
+    "bin": "06_goroutines",
+    "topic": "concurrency",
+    "code": "package main\n\nimport (\n    \"fmt\"\n    \"sync\"\n)\n\nfunc main() {\n    var wg sync.WaitGroup\n    wg.Add(1)\n\n    go func() {\n        defer wg.Done()\n        fmt.Println(\"worker\")\n    }()\n\n    wg.Wait()\n    fmt.Println(\"main\")\n}",
+    "expectedOutput": "worker\nmain",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 0
+      }
+    ]
+  },
+  {
+    "id": "07_channels",
+    "bin": "07_channels",
+    "topic": "channels",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    ch := make(chan string, 1)\n    ch <- \"go\"\n    fmt.Println(<-ch)\n}",
+    "expectedOutput": "go",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "08_context_timeout",
+    "bin": "08_context_timeout",
+    "topic": "context",
+    "code": "package main\n\nimport (\n    \"context\"\n    \"fmt\"\n)\n\nfunc main() {\n    ctx, cancel := context.WithCancel(context.Background())\n    cancel()\n    fmt.Println(ctx.Err() != nil)\n}",
+    "expectedOutput": "true",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 1
+      }
+    ]
+  }
+]

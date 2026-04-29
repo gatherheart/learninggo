@@ -67,6 +67,20 @@
             "Package choice does not make variables global."
           ],
           "answerReason": "A runnable binary needs one entry package and one entry function the toolchain can invoke."
+        },
+        "q3": {
+          "question": "What happens if a package is not named `main`?",
+          "options": [
+            "It cannot contain any functions.",
+            "It automatically becomes a test-only package.",
+            "It can still be compiled as a library package, but not as the executable entry package."
+          ],
+          "explanations": [
+            "Non-main packages absolutely can contain functions.",
+            "Package name alone does not make it test-only.",
+            "Correct. `main` is special because it marks the binary entry package."
+          ],
+          "answerReason": "Go distinguishes reusable packages from the program entry package through `package main`."
         }
       }
     },
@@ -90,6 +104,20 @@
             "Basic slicing does not copy the entire array."
           ],
           "answerReason": "A slice is metadata around shared storage, not an independent container by default."
+        },
+        "q3": {
+          "question": "What makes a slice different from an array in Go?",
+          "options": [
+            "A slice stores elements inline and never shares backing storage.",
+            "A slice is a descriptor over an underlying array region.",
+            "A slice can only hold strings."
+          ],
+          "explanations": [
+            "That describes arrays more than slices.",
+            "Correct. A slice carries pointer/length/capacity metadata over shared storage.",
+            "Slices can hold many element types."
+          ],
+          "answerReason": "Thinking of a slice as a view helps explain aliasing, append behavior, and shared mutation."
         }
       }
     },
@@ -113,6 +141,20 @@
             "Maps remain unordered."
           ],
           "answerReason": "Without `ok`, you cannot tell whether `0` means absent or explicitly stored."
+        },
+        "q3": {
+          "question": "Why can `value` alone be ambiguous after a map lookup?",
+          "options": [
+            "Because the zero value may mean either “missing key” or “present key with zero value”.",
+            "Because Go randomizes numeric results on missing keys.",
+            "Because map lookups always return strings internally."
+          ],
+          "explanations": [
+            "Correct. That is why the boolean presence result exists.",
+            "Go does not randomize the zero value.",
+            "Map result types stay whatever the map value type is."
+          ],
+          "answerReason": "The extra boolean exists because absence and zero are distinct states."
         }
       }
     },
@@ -136,6 +178,20 @@
             "Printing has nothing to do with receiver kind."
           ],
           "answerReason": "If `Inc` used a value receiver, it would increment a copy instead of the caller-owned value."
+        },
+        "q3": {
+          "question": "What would likely happen if `Inc` used a value receiver instead?",
+          "options": [
+            "The program would stop compiling because methods need pointer receivers.",
+            "The call would mutate both the original and a hidden backup copy.",
+            "The method would increment a copy, leaving the caller-owned struct unchanged."
+          ],
+          "explanations": [
+            "Go allows value receivers too.",
+            "There is no hidden backup synchronization here.",
+            "Correct. Value receivers work on a copy of the receiver."
+          ],
+          "answerReason": "Receiver choice is really about whether the method should observe/mutate the same value or a copy."
         }
       }
     },
@@ -159,6 +215,20 @@
             "The type checker verifies interface satisfaction statically."
           ],
           "answerReason": "Implicit satisfaction keeps interfaces lightweight and lets consumers define the behavior they need."
+        },
+        "q3": {
+          "question": "Why is implicit interface satisfaction useful in Go?",
+          "options": [
+            "It forces all packages to depend on one shared base interface package.",
+            "Consumers can define small interfaces based on needed behavior without modifying the concrete type.",
+            "It prevents compile-time checking of method sets."
+          ],
+          "explanations": [
+            "It actually reduces that kind of coupling.",
+            "Correct. Small consumer-owned interfaces are one of Go’s strongest design patterns.",
+            "Interface satisfaction is still checked statically."
+          ],
+          "answerReason": "A package can accept behavior it needs without requiring the concrete type author to anticipate every interface."
         }
       }
     },
@@ -182,6 +252,20 @@
             "Variable capture is a different language behavior."
           ],
           "answerReason": "Concurrency starts work; synchronization decides when that work must finish before exiting or continuing."
+        },
+        "q3": {
+          "question": "What would be the main risk if `main` returned immediately after starting the goroutine?",
+          "options": [
+            "The process could exit before the goroutine prints anything.",
+            "The goroutine would automatically become a daemon saved for later.",
+            "The Go runtime would convert the goroutine into a channel."
+          ],
+          "explanations": [
+            "Correct. Program lifetime still matters even with lightweight concurrency.",
+            "Goroutines do not survive process exit.",
+            "There is no such conversion."
+          ],
+          "answerReason": "Concurrency starts work, but you still need coordination when the whole process might end first."
         }
       }
     },
@@ -205,6 +289,20 @@
             "Channels can synchronize, but they do not make the whole program sequential."
           ],
           "answerReason": "Go encourages structuring concurrency around communication, with channels making handoff explicit."
+        },
+        "q3": {
+          "question": "Why do channels often reduce the need for shared mutable state?",
+          "options": [
+            "Because they make all data global automatically.",
+            "Because receiving from a channel clones every object deeply.",
+            "Because values can be handed off between goroutines instead of being mutated concurrently in place."
+          ],
+          "explanations": [
+            "Channels do not globalize data.",
+            "Channels do not imply deep cloning of everything sent.",
+            "Correct. The model encourages handoff and coordination rather than unrestricted shared mutation."
+          ],
+          "answerReason": "The slogan is not magic; it is about structuring ownership and communication explicitly."
         }
       }
     },
@@ -228,6 +326,20 @@
             "Context does not force synchronous behavior."
           ],
           "answerReason": "Cancellation only helps if every layer can see the same signal and stop work cooperatively."
+        },
+        "q3": {
+          "question": "What kind of data should usually not be stuffed into `context.Context`?",
+          "options": [
+            "Cancellation and deadline signals.",
+            "Normal business parameters that should be explicit function arguments.",
+            "Request-scoped values that middleware and handlers must share carefully."
+          ],
+          "explanations": [
+            "Those are core context responsibilities.",
+            "Correct. Ordinary domain inputs are clearer as explicit parameters.",
+            "Some request-scoped metadata can live in context when used deliberately."
+          ],
+          "answerReason": "Context is for cross-cutting request lifecycle concerns, not for hiding normal function inputs."
         }
       }
     }
