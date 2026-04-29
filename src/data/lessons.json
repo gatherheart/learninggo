@@ -23,8 +23,8 @@
     ]
   },
   {
-    "id": "02_variables_zero_values",
-    "bin": "02_variables_zero_values",
+    "id": "02_zero_values",
+    "bin": "02_zero_values",
     "topic": "basics",
     "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    var count int\n    var ok bool\n    fmt.Println(count)\n    fmt.Println(ok)\n}",
     "expectedOutput": "0\nfalse",
@@ -279,7 +279,7 @@
     "id": "13_mutex_waitgroup",
     "bin": "13_mutex_waitgroup",
     "topic": "sync",
-    "code": "package main\n\nimport (\n    \"fmt\"\n    \"sync\"\n)\n\nfunc main() {\n    var mu sync.Mutex\n    count := 0\n\n    mu.Lock()\n    count++\n    mu.Unlock()\n\n    fmt.Println(count)\n}",
+    "code": "package main\n\nimport (\n    \"fmt\"\n    \"sync\"\n)\n\nfunc main() {\n    var mu sync.Mutex\n    count := 0\n    mu.Lock()\n    count++\n    mu.Unlock()\n    fmt.Println(count)\n}",
     "expectedOutput": "1",
     "quizzes": [
       {
@@ -368,8 +368,123 @@
     ]
   },
   {
-    "id": "17_http_handler",
-    "bin": "17_http_handler",
+    "id": "17_gc_phases",
+    "bin": "17_gc_phases",
+    "topic": "gc",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    phases := 3\n    fmt.Println(phases)\n}",
+    "expectedOutput": "3",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "18_memory_model",
+    "bin": "18_memory_model",
+    "topic": "memory",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    synchronized := true\n    fmt.Println(synchronized)\n}",
+    "expectedOutput": "true",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 1
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 0
+      }
+    ]
+  },
+  {
+    "id": "19_generics",
+    "bin": "19_generics",
+    "topic": "generics",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc First[T any](items []T) T {\n    return items[0]\n}\n\nfunc main() {\n    fmt.Println(First([]int{4, 9, 1}))\n}",
+    "expectedOutput": "4",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 2
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 1
+      }
+    ]
+  },
+  {
+    "id": "20_testing_table_driven",
+    "bin": "20_testing_table_driven",
+    "topic": "testing",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    cases := 3\n    fmt.Println(cases)\n}",
+    "expectedOutput": "3",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "21_benchmarks_pprof",
+    "bin": "21_benchmarks_pprof",
+    "topic": "tooling",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    measured := true\n    fmt.Println(measured)\n}",
+    "expectedOutput": "true",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 1
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 0
+      }
+    ]
+  },
+  {
+    "id": "22_http_handler",
+    "bin": "22_http_handler",
     "topic": "net",
     "code": "package main\n\nimport \"fmt\"\n\nfunc route(method string) string {\n    if method == \"GET\" {\n        return \"list\"\n    }\n    return \"other\"\n}\n\nfunc main() {\n    fmt.Println(route(\"GET\"))\n}",
     "expectedOutput": "list",
@@ -387,6 +502,75 @@
         "id": "q3",
         "type": "multiple-choice",
         "answer": 0
+      }
+    ]
+  },
+  {
+    "id": "23_interfaces_in_practice",
+    "bin": "23_interfaces_in_practice",
+    "topic": "interfaces",
+    "code": "package main\n\nimport \"fmt\"\n\ntype Reader interface {\n    Read() string\n}\n\ntype ConfigFile struct{}\n\nfunc (ConfigFile) Read() string {\n    return \"ok\"\n}\n\nfunc main() {\n    var r Reader = ConfigFile{}\n    fmt.Println(r.Read())\n}",
+    "expectedOutput": "ok",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 0
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 2
+      }
+    ]
+  },
+  {
+    "id": "24_scheduler_gmp",
+    "bin": "24_scheduler_gmp",
+    "topic": "runtime",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    parts := 3\n    fmt.Println(parts)\n}",
+    "expectedOutput": "3",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 1
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 0
+      }
+    ]
+  },
+  {
+    "id": "25_cgo_unsafe_boundary",
+    "bin": "25_cgo_unsafe_boundary",
+    "topic": "runtime",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n    boundary := true\n    fmt.Println(boundary)\n}",
+    "expectedOutput": "true",
+    "quizzes": [
+      {
+        "id": "q1",
+        "type": "predict-output"
+      },
+      {
+        "id": "q2",
+        "type": "multiple-choice",
+        "answer": 2
+      },
+      {
+        "id": "q3",
+        "type": "multiple-choice",
+        "answer": 1
       }
     ]
   }

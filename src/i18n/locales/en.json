@@ -6,7 +6,7 @@
     "search": "Search lessons, topics, or ids",
     "keyboardHint": "Finish each lesson quiz set to unlock the next lesson.",
     "heroTitle": "Learn Go through small programs that surface the language model directly.",
-    "heroBody": "This track now starts from Go basics and builds toward interfaces, error handling, concurrency, the runtime, escape analysis, and garbage collection. The goal is to understand not only how to write Go, but why the language and runtime behave that way.",
+    "heroBody": "This track covers Go from syntax and zero values through interfaces, concurrency, the runtime, escape analysis, the memory model, garbage collection, testing, HTTP servers, and profiling. The goal is to learn both the language and the runtime model that explains why Go code behaves the way it does.",
     "startLearning": "Start learning",
     "lessonNotFound": "Lesson not found.",
     "courseComplete": "Every lesson is complete.",
@@ -29,7 +29,7 @@
     "howItWorks2": "Use the embedded editor to annotate or tweak the snippet while keeping the lesson context nearby.",
     "howItWorks3": "Finish the quiz set, then continue in the external workspace when you want a larger sandbox.",
     "previewLabel": "preview",
-    "previewStatus": "Move from values and control flow to goroutines, runtime behavior, and GC internals.",
+    "previewStatus": "Move from values and control flow to scheduler behavior, GC, HTTP servers, tests, and profiling.",
     "homeTip": "Edit examples here, then move to the official Go Playground when you want to run or expand them.",
     "howItWorks": "How it works",
     "lessonList": "Lesson list",
@@ -52,12 +52,16 @@
     "context": "context",
     "runtime": "runtime",
     "gc": "garbage collection",
-    "net": "net/http"
+    "net": "net/http",
+    "tooling": "tooling",
+    "generics": "generics",
+    "testing": "testing",
+    "memory": "memory model"
   },
   "lessons": {
     "01_go_main": {
-      "title": "Package Main and Program Entry",
-      "description": "A runnable Go program needs `package main` and a `main()` function.\n\n```go\npackage main\n\nfunc main() {\n    fmt.Println(\"boot\")\n}\n```\n\nThat tells the toolchain where executable control begins.",
+      "title": "Program Entry",
+      "description": "A runnable Go program uses `package main` and a `main()` function.\n\n```go\npackage main\nfunc main() { fmt.Println(\"boot\") }\n```",
       "quizzes": {
         "q1": {
           "question": "What is the output?"
@@ -70,122 +74,122 @@
             "It forces every variable to be global."
           ],
           "explanations": [
-            "Correct. That is how the Go toolchain identifies an executable program.",
+            "Correct. That is how the toolchain identifies an executable program.",
             "Any package can import the standard library.",
             "Package choice does not make variables global."
           ],
-          "answerReason": "A runnable Go binary needs one package and one function that the toolchain recognizes as the entry."
+          "answerReason": "Go distinguishes executable entry packages from reusable libraries through `package main`."
         },
         "q3": {
           "question": "What happens if a package is not named `main`?",
           "options": [
-            "It cannot contain any functions.",
-            "It automatically becomes test-only.",
-            "It can still be compiled as a library package, but not as the executable entry package."
+            "It cannot contain functions.",
+            "It becomes a test-only package automatically.",
+            "It can still compile as a library package, but not as the executable entry package."
           ],
           "explanations": [
-            "Non-main packages can contain plenty of functions.",
+            "Non-main packages can contain normal code.",
             "Package name alone does not make it test-only.",
             "Correct. Non-main packages are reusable packages rather than the binary entry package."
           ],
-          "answerReason": "Go separates executable entry packages from ordinary libraries through `package main`."
+          "answerReason": "This is how Go keeps library code and executable entry points separate."
         }
       }
     },
-    "02_variables_zero_values": {
-      "title": "Variables and Zero Values",
-      "description": "Go gives variables a defined zero value even before you assign something meaningful.\n\n```go\nvar count int\nvar ok bool\n```\n\nThis reduces uninitialized-memory style bugs and shapes many Go APIs.",
+    "02_zero_values": {
+      "title": "Zero Values",
+      "description": "Go gives variables a defined zero value.\n\n```go\nvar count int\nvar ok bool\n```",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
-          "question": "What is the zero value of an `int` in Go?",
+          "question": "What is the zero value of `int`?",
           "options": [
             "`nil`",
             "`0`",
             "an undefined value"
           ],
           "explanations": [
-            "`nil` is for certain reference-like types, not `int`.",
-            "Correct. Numeric types have numeric zero values.",
-            "Go avoids the “undefined local variable contents” model here."
+            "`nil` is for reference-like types.",
+            "Correct. Numeric zero values are defined.",
+            "Go avoids undefined local contents here."
           ],
-          "answerReason": "Go initializes variables to a defined zero value automatically."
+          "answerReason": "Defined zero values shape many Go APIs."
         },
         "q3": {
           "question": "Why are zero values important in Go style?",
           "options": [
-            "They make many types usable immediately without an explicit constructor.",
-            "They force every API to use global variables.",
-            "They eliminate the need for the type system."
+            "They make many types usable immediately without explicit constructors.",
+            "They force all APIs to use global variables.",
+            "They eliminate the type system."
           ],
           "explanations": [
-            "Correct. Many Go types are designed so the zero value is meaningful.",
+            "Correct. Go often aims for “the zero value is useful.”",
             "Zero values do not imply global state.",
-            "They complement the type system; they do not replace it."
+            "They complement, not replace, the type system."
           ],
-          "answerReason": "Go APIs often aim for “the zero value is useful,” which keeps simple cases lightweight."
+          "answerReason": "This is one reason Go APIs often feel lightweight."
         }
       }
     },
     "03_functions_returns": {
       "title": "Functions and Multiple Returns",
-      "description": "Go functions can return more than one value.\n\n```go\nfunc divide(a, b int) (int, int)\n```\n\nThis is especially useful for returning a result together with an error or status flag.",
+      "description": "Go functions can return more than one value, which makes patterns like `(value, err)` natural.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
-          "question": "Why are multiple return values useful in Go?",
+          "question": "Why are multiple return values useful?",
           "options": [
-            "They let one function define multiple packages.",
-            "They eliminate the need for any control flow.",
-            "They let a function return both a result and extra status such as an error."
+            "They remove the need for control flow.",
+            "They define multiple packages at once.",
+            "They let a function return both a result and status such as an error."
           ],
           "explanations": [
+            "Control flow is still needed.",
             "Packages are unrelated.",
-            "Control flow is still needed normally.",
             "Correct. This is a major reason Go error handling looks the way it does."
           ],
-          "answerReason": "Multiple returns make patterns like `(value, ok)` and `(value, err)` natural."
+          "answerReason": "The language makes status-return patterns first-class."
         },
         "q3": {
           "question": "What does `left, right := swap(3, 7)` do?",
           "options": [
-            "It declares only `left` and assigns `right` later.",
-            "It declares two variables and binds each returned value positionally.",
+            "It declares only `left`.",
+            "It declares two variables and binds returned values positionally.",
             "It copies the function body into `main`."
           ],
           "explanations": [
-            "Both variables are declared together here.",
+            "Both variables are declared together.",
             "Correct. Return positions map to assignment positions.",
-            "Function calls do not inline by source substitution like that."
+            "Calls do not work by source substitution."
           ],
-          "answerReason": "Go binds multiple return values by position, not by field names."
+          "answerReason": "Go binds multiple returned values by position."
         }
       }
     },
     "04_pointers": {
-      "title": "Pointers and Direct Mutation",
-      "description": "Go has pointers, but not pointer arithmetic in the C sense.\n\n```go\nfunc inc(n *int) {\n    *n++\n}\n```\n\nPointers let a function mutate the caller-owned value directly.",
+      "title": "Pointers and Mutation",
+      "description": "Go has pointers, but not general pointer arithmetic in safe code. Pointers mostly model shared access and mutation.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
-          "question": "Why pass `*int` here instead of `int`?",
+          "question": "Why pass `*int` here?",
           "options": [
             "The function needs access to the caller-owned value so it can mutate it.",
             "Go forbids passing integers by value.",
-            "Only pointer parameters can be printed."
+            "Only pointers can be printed."
           ],
           "explanations": [
             "Correct. A pointer lets the function change the original variable.",
-            "Go absolutely allows ordinary value parameters.",
-            "Printing is unrelated to pointer-ness."
+            "Value parameters are normal in Go.",
+            "Printing is unrelated."
           ],
-          "answerReason": "Passing a pointer changes which value is being updated: the caller’s rather than a copy."
+          "answerReason": "Pointers let a function modify the caller-owned value rather than a copy."
         },
         "q3": {
           "question": "What is a key constraint on pointers in Go compared with C?",
@@ -196,93 +200,93 @@
           ],
           "explanations": [
             "They can point to values normally.",
-            "Escape analysis may move pointed-to values; stack only is false.",
-            "Correct. Go keeps pointer use narrower and safer than C."
+            "Escape analysis may move values; stack-only is false.",
+            "Correct. Go keeps pointer usage narrower than C."
           ],
-          "answerReason": "Go uses pointers for sharing access, not as a general low-level arithmetic tool in safe code."
+          "answerReason": "Go uses pointers for sharing access, not for arbitrary low-level arithmetic in safe code."
         }
       }
     },
     "05_arrays_slices": {
-      "title": "Arrays, Slices, and Backing Storage",
-      "description": "Arrays have fixed length. Slices are lightweight views over array storage.\n\n```go\nnums := []int{1, 2, 3}\npart := nums[:2]\n```\n\nUnderstanding that view model is essential for reasoning about mutation and append behavior.",
+      "title": "Arrays and Slices",
+      "description": "Slices are descriptors over underlying array storage. That is why mutating one slice can affect another view.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "Why does changing `part[0]` affect `nums[0]`?",
           "options": [
             "Slices synchronize indexes automatically.",
             "The slice still points to the same backing array.",
-            "Slicing deep-copies the entire array."
+            "Slicing deep-copies the array."
           ],
           "explanations": [
-            "There is no automatic index synchronization feature.",
+            "There is no automatic sync rule.",
             "Correct. A slice is metadata over shared storage.",
-            "Basic slicing does not deep-copy the underlying array."
+            "Basic slicing does not deep-copy the backing array."
           ],
-          "answerReason": "The aliasing comes from shared storage, not from a magical “slice sync” rule."
+          "answerReason": "Thinking “slice = descriptor” explains aliasing and append behavior."
         },
         "q3": {
           "question": "What is the main conceptual difference between an array and a slice?",
           "options": [
             "An array owns fixed-size storage; a slice describes a region of underlying storage.",
-            "An array can hold only numbers, while a slice can hold any type.",
-            "A slice is always immutable."
+            "Arrays only hold numbers.",
+            "Slices are always immutable."
           ],
           "explanations": [
-            "Correct. Arrays are concrete fixed-size values; slices are flexible views.",
-            "Both can be defined over many element types.",
-            "Slices are mutable when the underlying elements are mutable."
+            "Correct. Arrays are concrete fixed-size values; slices are views.",
+            "Both can hold many element types.",
+            "Slices are mutable when their elements are mutable."
           ],
-          "answerReason": "Thinking “slice = descriptor” explains why length, capacity, aliasing, and append matter."
+          "answerReason": "This distinction drives length, capacity, and aliasing semantics."
         }
       }
     },
     "06_maps": {
-      "title": "Map Lookup and Presence",
-      "description": "Map lookup often returns a value together with a boolean presence flag.\n\n```go\nv, ok := m[\"key\"]\n```\n\nThat distinction matters because a missing key and a stored zero value are different states.",
+      "title": "Maps and Presence",
+      "description": "Map lookup often returns a value together with a boolean flag. The flag tells you whether the key was present at all.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "Why is the `ok` result useful?",
           "options": [
             "It distinguishes a missing key from a present key whose value is the zero value.",
-            "It skips hashing for faster lookups.",
-            "It converts the map into an ordered structure."
+            "It skips hashing.",
+            "It orders the map."
           ],
           "explanations": [
             "Correct. Presence and value are separate facts.",
             "Hashing still happens.",
             "Maps remain unordered."
           ],
-          "answerReason": "Without `ok`, `0` could mean “absent” or “present with value zero.”"
+          "answerReason": "Without `ok`, `0` could mean “absent” or “present with zero value.”"
         },
         "q3": {
           "question": "Why can the value result alone be ambiguous?",
           "options": [
             "Because Go randomizes missing results.",
-            "Because the zero value might also be a legitimate stored value.",
+            "Because the zero value may also be a legitimate stored value.",
             "Because maps always return strings internally."
           ],
           "explanations": [
-            "Go does not randomize the zero value.",
-            "Correct. Many value types have meaningful zero values.",
+            "Go does not randomize missing values.",
+            "Correct. Zero can be a valid stored result too.",
             "Map results keep their declared type."
           ],
-          "answerReason": "The extra boolean exists because zero and absent are not the same thing."
+          "answerReason": "The extra boolean exists because zero and absent are different states."
         }
       }
     },
     "07_structs_methods": {
-      "title": "Structs and Method Receivers",
-      "description": "Go methods attach behavior to receiver types rather than to classes.\n\n```go\ntype Counter struct { value int }\nfunc (c *Counter) Inc() { c.value++ }\n```\n\nPointer receivers are common when mutation or copy avoidance matters.",
+      "title": "Structs and Methods",
+      "description": "Go attaches methods to receiver types rather than using classes. Pointer receivers are common when mutation matters.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "Why is the receiver a pointer here?",
@@ -294,106 +298,106 @@
           "explanations": [
             "Correct. Mutation should affect the caller-owned value.",
             "Value receivers also exist.",
-            "Printing has nothing to do with receiver kind."
+            "Printing is unrelated."
           ],
           "answerReason": "Receiver choice decides whether a method sees the same value or a copy."
         },
         "q3": {
-          "question": "What would likely happen if `Inc` used a value receiver instead?",
+          "question": "What would likely happen with a value receiver instead?",
           "options": [
             "The program would stop compiling.",
             "The call would update both the original and an automatic backup.",
             "The method would increment a copy, leaving the caller-owned struct unchanged."
           ],
           "explanations": [
-            "Value receivers are legal in Go.",
-            "There is no hidden backup update rule.",
+            "Value receivers are legal.",
+            "There is no hidden backup rule.",
             "Correct. Value receivers work on a copy."
           ],
-          "answerReason": "Methods on value receivers can read well, but mutation of the caller-owned value needs a pointer receiver."
+          "answerReason": "Methods on value receivers cannot mutate the caller-owned struct directly."
         }
       }
     },
     "08_interfaces": {
       "title": "Interfaces and Implicit Satisfaction",
-      "description": "A Go interface describes behavior, and types satisfy it implicitly by method set.\n\n```go\ntype Runner interface {\n    Run() string\n}\n```\n\nThere is no `implements` keyword.",
+      "description": "Go interfaces describe behavior, and types satisfy them implicitly by method set.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "How does `Job` satisfy `Runner`?",
           "options": [
             "It must declare `implements Runner`.",
             "It has the required method, so it satisfies the interface implicitly.",
-            "Interfaces are checked only through reflection at runtime."
+            "Interfaces are checked only through reflection."
           ],
           "explanations": [
             "Go has no `implements` keyword.",
             "Correct. Satisfaction is structural and compile-time checked.",
-            "The type checker handles this before runtime."
+            "This is not deferred to reflection."
           ],
-          "answerReason": "Go interfaces are about behavior a value has, not a declared inheritance relationship."
+          "answerReason": "Interfaces in Go are about behavior a value has, not declared inheritance."
         },
         "q3": {
-          "question": "Why is implicit satisfaction useful in Go design?",
+          "question": "Why is implicit satisfaction useful?",
           "options": [
-            "Consumers can define small interfaces around the behavior they need without modifying the concrete type.",
-            "It forces all packages to depend on one global interface registry.",
-            "It prevents compile-time verification of behavior."
+            "Consumers can define small interfaces around needed behavior without modifying the concrete type.",
+            "It forces all packages to share one interface registry.",
+            "It prevents compile-time verification."
           ],
           "explanations": [
             "Correct. This supports decoupled, consumer-owned abstractions.",
-            "Go’s interface model reduces that kind of central coupling.",
+            "Go’s model reduces that coupling.",
             "Compile-time verification still happens."
           ],
-          "answerReason": "Small interfaces work well because the consumer can describe behavior locally without demanding upstream type declarations."
+          "answerReason": "Small consumer-owned interfaces are a major Go design strength."
         }
       }
     },
     "09_errors": {
       "title": "Errors Are Values",
-      "description": "Go treats errors as ordinary returned values rather than exceptions for common failure paths.\n\n```go\nvalue, err := work()\nif err != nil {\n    return err\n}\n```\n\nThis keeps failure handling explicit in control flow.",
+      "description": "Go treats errors as ordinary returned values rather than exceptions for ordinary failure paths.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "Why does Go often return `error` explicitly?",
           "options": [
-            "To avoid any need for control flow.",
-            "Because Go has no function returns.",
+            "To avoid all control flow.",
+            "Because Go has no returns.",
             "Because failure is treated as data the caller must inspect explicitly."
           ],
           "explanations": [
-            "Control flow is still necessary.",
-            "Go obviously has function returns.",
-            "Correct. The caller decides how to handle the failure path."
+            "Control flow still exists.",
+            "Go obviously has returns.",
+            "Correct. The caller decides how to handle failure."
           ],
-          "answerReason": "Go prefers explicit error handling over hidden exception-like jumps for ordinary failures."
+          "answerReason": "Go prefers explicit failure handling over hidden control transfer for ordinary errors."
         },
         "q3": {
-          "question": "What does the phrase “errors are values” emphasize?",
+          "question": "What does “errors are values” emphasize?",
           "options": [
             "Errors should always be ignored after logging.",
             "An error participates in normal program logic like any other returned value.",
             "Only numeric types can represent errors."
           ],
           "explanations": [
-            "Ignoring errors is the opposite of the intended lesson.",
+            "Ignoring errors is the opposite of the lesson.",
             "Correct. Errors are passed, checked, wrapped, and returned explicitly.",
-            "Errors are interface values, not numeric-only constructs."
+            "Errors are interface values, not numeric-only values."
           ],
-          "answerReason": "The design encourages visible, deliberate failure handling rather than implicit control transfer."
+          "answerReason": "This design encourages visible, deliberate failure handling."
         }
       }
     },
     "10_defer_panic_recover": {
       "title": "Defer, Panic, and Recover",
-      "description": "`defer` schedules cleanup for the surrounding function. `panic` is for unrecoverable states, and `recover` can intercept a panic inside deferred code.\n\n```go\ndefer file.Close()\n```\n\nThese tools are powerful, but they are not the normal substitute for explicit `error` returns.",
+      "description": "`defer` schedules cleanup for function exit. `panic` is for unrecoverable states, not ordinary business failures.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "What is the main use of `defer`?",
@@ -403,34 +407,34 @@
             "To convert every error into a panic."
           ],
           "explanations": [
-            "Correct. `defer` is commonly used for unlock/close/cleanup patterns.",
+            "Correct. `defer` is common for unlock/close/cleanup patterns.",
             "`defer` does not create goroutines.",
-            "Errors and panics are different mechanisms."
+            "Errors and panics are different tools."
           ],
-          "answerReason": "`defer` keeps cleanup near acquisition while preserving correct return-order behavior."
+          "answerReason": "`defer` keeps cleanup close to acquisition while preserving return-order behavior."
         },
         "q3": {
-          "question": "Why is `panic` usually not the default error-handling mechanism in Go?",
+          "question": "Why is `panic` usually not the default error-handling mechanism?",
           "options": [
-            "Because `panic` is faster than returning errors.",
-            "Because `panic` is required for all I/O failures.",
-            "Because ordinary failures are usually expected control-flow cases that callers should handle explicitly."
+            "Because `panic` is faster.",
+            "Because panics are required for all I/O failures.",
+            "Because ordinary failures are expected control-flow cases that callers should handle explicitly."
           ],
           "explanations": [
-            "Speed is not the reason to avoid it.",
-            "Ordinary I/O errors are usually returned, not panicked.",
-            "Correct. `panic` is for truly exceptional states, not routine failure paths."
+            "Speed is not the reason.",
+            "Routine I/O errors are normally returned, not panicked.",
+            "Correct. `panic` is for exceptional or unrecoverable states."
           ],
-          "answerReason": "Using `panic` for common errors makes control flow harder to reason about and recover from cleanly."
+          "answerReason": "Using panic for routine failures makes control flow harder to reason about."
         }
       }
     },
     "11_goroutines": {
       "title": "Goroutines and Process Lifetime",
-      "description": "A goroutine is a lightweight concurrent execution managed by the Go runtime.\n\n```go\ngo work()\n```\n\nStarting one does not keep the whole process alive by itself.",
+      "description": "A goroutine is a lightweight concurrent execution managed by the runtime, but it still lives inside one process that may exit first.",
       "quizzes": {
         "q1": {
-          "question": "What is printed with the wait group in place?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "Why is `WaitGroup` used here?",
@@ -441,10 +445,10 @@
           ],
           "explanations": [
             "Correct. Without synchronization, the program could exit too early.",
-            "`WaitGroup` does not do CPU pinning.",
+            "`WaitGroup` does not pin goroutines.",
             "Variable capture is unrelated."
           ],
-          "answerReason": "Concurrency starts work; synchronization determines whether the program waits for it."
+          "answerReason": "Concurrency starts work; synchronization decides whether the process waits for it."
         },
         "q3": {
           "question": "What is the risk if `main` returns immediately after launching a goroutine?",
@@ -458,27 +462,27 @@
             "Correct. Program lifetime still matters.",
             "There is no such conversion."
           ],
-          "answerReason": "A goroutine is lightweight, but it still lives inside one process that may end first."
+          "answerReason": "A goroutine is lightweight, but it still lives inside a process that can end first."
         }
       }
     },
     "12_channels_select": {
       "title": "Channels and Select",
-      "description": "Channels coordinate communication between goroutines. `select` waits on multiple communication cases.\n\n```go\nselect {\ncase v := <-ch:\n    fmt.Println(v)\ndefault:\n}\n```",
+      "description": "Channels coordinate communication between goroutines. `select` waits on multiple communication cases.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "What is the main role of a channel?",
           "options": [
-            "To sort messages before receipt.",
+            "To sort messages.",
             "To guarantee all goroutines run sequentially.",
             "To coordinate communication and handoff between goroutines."
           ],
           "explanations": [
             "Channels do not sort values.",
-            "They can synchronize specific interactions, not make the whole program sequential.",
+            "They do not make the whole program sequential.",
             "Correct. Communication is the main abstraction."
           ],
           "answerReason": "Channels make ownership transfer and coordination explicit."
@@ -487,7 +491,7 @@
           "question": "Why is `select` useful?",
           "options": [
             "It lets one goroutine react to whichever channel operation becomes ready first.",
-            "It replaces all loops in concurrent code.",
+            "It replaces all loops.",
             "It forces every case to run in order."
           ],
           "explanations": [
@@ -495,16 +499,16 @@
             "Loops are still useful.",
             "Ready case selection is not fixed sequential execution."
           ],
-          "answerReason": "`select` is the communication-oriented control flow primitive for waiting on multiple possible events."
+          "answerReason": "`select` is the communication-oriented control-flow primitive for multiple possible events."
         }
       }
     },
     "13_mutex_waitgroup": {
       "title": "Mutexes and Shared State",
-      "description": "Channels are not the only concurrency tool. Sometimes you have shared mutable state and need explicit locking.\n\n```go\nmu.Lock()\ncount++\nmu.Unlock()\n```\n\nA mutex protects the critical section, while a wait group can coordinate completion.",
+      "description": "Channels are not the only concurrency tool. Sometimes you have shared mutable state and need explicit locking.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "What problem does a mutex solve?",
@@ -514,7 +518,7 @@
             "It creates new goroutines on lock acquisition."
           ],
           "explanations": [
-            "A mutex is about correctness, not automatic speedups.",
+            "A mutex is about correctness, not automatic speed.",
             "Correct. Mutual exclusion protects critical sections.",
             "Locks do not spawn goroutines."
           ],
@@ -528,40 +532,40 @@
             "You gain correctness for shared updates, but the critical section may reduce concurrency."
           ],
           "explanations": [
-            "You still need to reason about what is shared and why.",
+            "You still must reason about what is shared.",
             "Serialization can reduce, not maximize, parallelism.",
             "Correct. Locks trade some concurrency freedom for safety."
           ],
-          "answerReason": "Locking is a correctness tool first; performance consequences depend on contention and design."
+          "answerReason": "Locking is a correctness tool first; performance depends on contention and design."
         }
       }
     },
     "14_context_timeout": {
       "title": "Context Cancellation and Deadlines",
-      "description": "A `context.Context` carries cancellation signals, deadlines, and a small amount of request-scoped metadata through call chains.\n\n```go\nctx, cancel := context.WithTimeout(parent, time.Second)\ndefer cancel()\n```",
+      "description": "A `context.Context` carries cancellation signals, deadlines, and small amounts of request-scoped metadata through call chains.",
       "quizzes": {
         "q1": {
-          "question": "What is printed after `cancel()`?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "Why pass `context.Context` through a request path?",
           "options": [
             "It lets downstream work observe cancellation and deadlines consistently.",
-            "It replaces ordinary function parameters for business data.",
+            "It replaces ordinary business parameters.",
             "It forces synchronous execution."
           ],
           "explanations": [
             "Correct. It propagates lifecycle signals across layers.",
-            "Normal domain inputs are usually clearer as explicit parameters.",
+            "Normal inputs are usually clearer as explicit parameters.",
             "Context does not force synchronous behavior."
           ],
-          "answerReason": "Cancellation only helps when all relevant layers can see the same signal."
+          "answerReason": "Cancellation only helps when every relevant layer can see the same signal."
         },
         "q3": {
           "question": "What kind of data should usually not be hidden in `context.Context`?",
           "options": [
             "Cancellation and deadline information.",
-            "Ordinary business parameters that should be explicit function arguments.",
+            "Ordinary business parameters that should be explicit arguments.",
             "Request-scoped metadata for cross-cutting middleware concerns."
           ],
           "explanations": [
@@ -574,22 +578,22 @@
       }
     },
     "15_escape_analysis": {
-      "title": "Escape Analysis and Allocation Placement",
-      "description": "Go decides whether a value can stay on the stack or must move to the heap.\n\n```go\nfunc makePtr() *int {\n    x := 1\n    return &x\n}\n```\n\nIf a value escapes the function, the runtime/compiler must ensure it outlives the stack frame.",
+      "title": "Escape Analysis",
+      "description": "Go decides whether a value can stay on the stack or must move to the heap. If a value escapes the frame, stack-only lifetime is not enough.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "Why can returning `&x` be safe in Go?",
           "options": [
             "Because pointers to locals are always invalid but tolerated.",
             "Because escape analysis can move `x` to the heap when the value must outlive the function frame.",
-            "Because Go copies the stack frame forever."
+            "Because Go copies the whole stack forever."
           ],
           "explanations": [
-            "Go does not knowingly expose invalid local pointers in safe code.",
-            "Correct. The compiler/runtime cooperates to preserve lifetime safety.",
+            "Go does not knowingly expose invalid pointers in safe code.",
+            "Correct. The compiler/runtime preserves the needed lifetime.",
             "Whole stack frames are not copied forever."
           ],
           "answerReason": "Escape analysis helps decide when stack allocation is insufficient for the required lifetime."
@@ -599,72 +603,257 @@
           "options": [
             "Whether the program imports too many packages.",
             "Whether the pointer type implements an interface.",
-            "Whether a value’s lifetime requires it to outlive the current stack frame."
+            "Whether a value must outlive the current stack frame."
           ],
           "explanations": [
             "Imports are unrelated.",
-            "Interface implementation is unrelated.",
-            "Correct. Lifetime and reachability beyond the frame are the key questions."
+            "Interfaces are unrelated.",
+            "Correct. Lifetime beyond the frame is the key question."
           ],
           "answerReason": "Allocation placement follows lifetime needs, not just syntax."
         }
       }
     },
     "16_gc_basic": {
-      "title": "Garbage Collection from Reachability",
-      "description": "Go uses garbage collection to reclaim heap objects that are no longer reachable from live roots.\n\n```text\nroots -> reachable objects stay alive\nunreachable objects can be reclaimed\n```\n\nThis lets developers avoid manual free operations, but runtime cost and allocation behavior still matter.",
+      "title": "Garbage Collection and Reachability",
+      "description": "Go uses garbage collection to reclaim heap objects that are no longer reachable from live roots.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
         },
         "q2": {
           "question": "What keeps an object alive for the garbage collector?",
           "options": [
             "It is still reachable from live roots such as stacks, globals, or runtime-managed references.",
-            "It has existed for fewer than 10 seconds.",
+            "It has existed for fewer than ten seconds.",
             "It was allocated with a pointer type."
           ],
           "explanations": [
             "Correct. Reachability is the key property.",
-            "Object age alone is not the rule.",
+            "Age alone is not the rule.",
             "Pointer type syntax alone does not guarantee liveness."
           ],
-          "answerReason": "GC is about reachability from live roots, not about manual “delete” calls."
+          "answerReason": "GC is about reachability from live roots, not manual delete calls."
         },
         "q3": {
           "question": "Why should a Go developer still care how GC works?",
           "options": [
             "Because every Go program must call `free` manually.",
-            "Because allocation rate, object lifetime, and pointer-rich structures affect runtime and pause/throughput behavior.",
-            "Because GC eliminates all memory-related performance tradeoffs."
+            "Because allocation rate, object lifetime, and pointer-rich structures affect runtime and latency behavior.",
+            "Because GC eliminates all memory performance tradeoffs."
           ],
           "explanations": [
             "Go does not require manual `free`.",
-            "Correct. GC removes one class of bug, but runtime costs still depend on allocation patterns.",
+            "Correct. GC removes one class of bugs, but runtime cost still depends on allocation behavior.",
             "GC does not erase performance tradeoffs."
           ],
-          "answerReason": "Knowing the GC model helps you reason about heap pressure, latency, and why certain designs allocate more than others."
+          "answerReason": "Knowing the GC model helps explain heap pressure, latency, and throughput tradeoffs."
         }
       }
     },
-    "17_http_handler": {
-      "title": "HTTP Handlers and Request Flow",
-      "description": "A handler is a function that receives a response writer and a request.\n\n```go\nfunc handler(w http.ResponseWriter, r *http.Request)\n```\n\nThis is the entry point for many Go web services.",
+    "17_gc_phases": {
+      "title": "GC Phases and Write Barriers",
+      "description": "Modern tracing collectors coordinate marking and sweeping while the program keeps running. Write barriers help maintain correctness during concurrent marking.",
       "quizzes": {
         "q1": {
-          "question": "What is printed?"
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why does a concurrent GC need a write barrier?",
+          "options": [
+            "Because the program can keep mutating references while the collector is tracing object graph reachability.",
+            "Because the barrier encrypts pointers.",
+            "Because write barriers delete all short-lived objects instantly."
+          ],
+          "explanations": [
+            "Correct. Concurrent mutation would otherwise break the collector’s view of reachability.",
+            "Encryption is unrelated.",
+            "Write barriers are about correctness, not instant deletion."
+          ],
+          "answerReason": "If the heap changes while the collector is tracing it, the collector needs help preserving a correct reachability picture."
+        },
+        "q3": {
+          "question": "What is the high-level goal of Go’s modern GC design?",
+          "options": [
+            "To stop the world for the entire lifetime of the program.",
+            "To avoid all runtime overhead from memory management.",
+            "To balance automatic memory safety with acceptable pause times and throughput."
+          ],
+          "explanations": [
+            "A collector that stopped the world forever would be useless.",
+            "Automatic memory management still has cost.",
+            "Correct. GC design is about balancing correctness, latency, and throughput."
+          ],
+          "answerReason": "Runtime engineering is about tradeoffs, not free elimination of all costs."
+        }
+      }
+    },
+    "18_memory_model": {
+      "title": "The Go Memory Model",
+      "description": "Concurrent correctness is not only about syntax. The memory model defines when writes from one goroutine are guaranteed to become visible to another.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why does the memory model matter in concurrent Go code?",
+          "options": [
+            "Because it changes package import rules.",
+            "Because visibility and ordering between goroutines need explicit synchronization guarantees.",
+            "Because it makes integers larger at runtime."
+          ],
+          "explanations": [
+            "Imports are unrelated.",
+            "Correct. Concurrency correctness depends on ordering and visibility guarantees.",
+            "Integer size is unrelated."
+          ],
+          "answerReason": "Without synchronization, even “simple” shared-state reasoning can be wrong."
+        },
+        "q3": {
+          "question": "What usually creates a happens-before relationship in Go?",
+          "options": [
+            "Synchronization operations such as channel communication, mutex unlock/lock ordering, or other documented primitives.",
+            "Two goroutines printing to stdout.",
+            "Using short variable declarations."
+          ],
+          "explanations": [
+            "Correct. Happens-before is created by specific synchronization semantics.",
+            "Printing is not a general memory-ordering primitive.",
+            "Variable declaration syntax does not synchronize goroutines."
+          ],
+          "answerReason": "The memory model is about when one event’s effects are guaranteed visible to another."
+        }
+      }
+    },
+    "19_generics": {
+      "title": "Generics and Type Parameters",
+      "description": "Go generics let one function or type work across multiple concrete types while preserving static type checking.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why are generics useful?",
+          "options": [
+            "They remove the need for types.",
+            "They make every type interchangeable at runtime.",
+            "They let reusable algorithms stay type-safe across multiple concrete types."
+          ],
+          "explanations": [
+            "Types still matter strongly.",
+            "Generic code is still statically checked.",
+            "Correct. Generics reduce duplication without giving up static type checking."
+          ],
+          "answerReason": "Generics are about reusable structure without dropping into `interface{}` everywhere."
+        },
+        "q3": {
+          "question": "What does `T any` mean here?",
+          "options": [
+            "`T` must be an integer.",
+            "`T` is a type parameter with no extra constraint beyond being any type.",
+            "`T` is a runtime variable."
+          ],
+          "explanations": [
+            "No integer-only restriction is present.",
+            "Correct. `any` is the broadest constraint.",
+            "Type parameters are compile-time type-level entities, not runtime variables."
+          ],
+          "answerReason": "Constraints describe what operations generic code may assume about type arguments."
+        }
+      }
+    },
+    "20_testing_table_driven": {
+      "title": "Table-Driven Tests",
+      "description": "Go tests often use tables of input and expected output so one test structure can exercise many cases.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why are table-driven tests common in Go?",
+          "options": [
+            "They make it easy to run one test shape across many cases with clear input/output expectations.",
+            "They replace the need for assertions.",
+            "They only work for string functions."
+          ],
+          "explanations": [
+            "Correct. The style keeps tests compact and scalable.",
+            "Assertions or checks still matter.",
+            "They work across many kinds of logic."
+          ],
+          "answerReason": "The pattern keeps test structure uniform while expanding case coverage."
+        },
+        "q3": {
+          "question": "What is a major advantage of table-driven tests during maintenance?",
+          "options": [
+            "They make production code faster automatically.",
+            "They prevent all bugs.",
+            "New edge cases can often be added by extending test data rather than rewriting the test structure."
+          ],
+          "explanations": [
+            "Tests do not directly optimize production speed.",
+            "No test style prevents all bugs.",
+            "Correct. Extending the case table is often simple and readable."
+          ],
+          "answerReason": "Good test structure lowers the cost of broadening coverage over time."
+        }
+      }
+    },
+    "21_benchmarks_pprof": {
+      "title": "Benchmarks and Profiling",
+      "description": "Go includes built-in support for benchmarks and tooling such as `pprof`. Performance work should be measured, not guessed.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why use benchmarks before performance claims?",
+          "options": [
+            "Because benchmarks change the compiler.",
+            "Because optimization work should be grounded in measured behavior rather than intuition alone.",
+            "Because benchmarks automatically fix slow code."
+          ],
+          "explanations": [
+            "Benchmarks do not change language semantics.",
+            "Correct. Performance work needs measurement.",
+            "Benchmarks report; they do not fix code themselves."
+          ],
+          "answerReason": "Systems performance work should start with evidence, not hunches."
+        },
+        "q3": {
+          "question": "What does a profiler like `pprof` help you find?",
+          "options": [
+            "Where time or allocation is actually going in a real execution profile.",
+            "How to rename packages.",
+            "How to turn all goroutines into threads."
+          ],
+          "explanations": [
+            "Correct. Profiling identifies hot paths and allocation patterns.",
+            "Renaming packages is unrelated.",
+            "Profilers do not change the concurrency model."
+          ],
+          "answerReason": "Optimization gets much easier once you know where the program is actually spending resources."
+        }
+      }
+    },
+    "22_http_handler": {
+      "title": "HTTP Handlers",
+      "description": "A handler is an entry point that receives a request and writes a response. This is the transport boundary of many Go services.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
         },
         "q2": {
           "question": "What is a handler’s job conceptually?",
           "options": [
-            "To replace the Go runtime scheduler.",
+            "To replace the scheduler.",
             "To implement garbage collection.",
             "To receive a request, run application logic, and write a response."
           ],
           "explanations": [
             "Scheduling is unrelated.",
             "GC is unrelated.",
-            "Correct. A handler is the boundary between HTTP traffic and your application logic."
+            "Correct. A handler is the boundary between HTTP traffic and application logic."
           ],
           "answerReason": "Handlers are transport-layer entry points for incoming requests."
         },
@@ -677,10 +866,121 @@
           ],
           "explanations": [
             "Correct. Good boundaries matter early, not only in large services.",
-            "Pushing everything into the handler creates tight coupling.",
-            "HTTP method handling absolutely matters."
+            "Putting everything in handlers creates tight coupling.",
+            "HTTP methods absolutely matter."
           ],
-          "answerReason": "Even small services benefit when transport concerns and domain logic are kept distinct."
+          "answerReason": "Even small services benefit when transport concerns and domain logic stay distinct."
+        }
+      }
+    },
+    "23_interfaces_in_practice": {
+      "title": "Interfaces in Practice",
+      "description": "In idiomatic Go, small interfaces are often defined by the consumer, not the concrete implementation package.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why are small consumer-owned interfaces often preferable?",
+          "options": [
+            "They reduce coupling and describe only the behavior a caller actually needs.",
+            "They force every implementation to import the consumer package.",
+            "They remove compile-time checking."
+          ],
+          "explanations": [
+            "Correct. Narrow interfaces keep dependencies lighter.",
+            "Implementations do not need to import the consumer package just to satisfy the interface.",
+            "Compile-time checking remains."
+          ],
+          "answerReason": "Designing interfaces around use cases rather than concrete types keeps packages more flexible."
+        },
+        "q3": {
+          "question": "What is a common smell in Go interface design?",
+          "options": [
+            "An interface with one or two methods focused on a use case.",
+            "An interface defined by the consumer.",
+            "A huge interface that mirrors an implementation instead of the caller’s minimal need."
+          ],
+          "explanations": [
+            "Small focused interfaces are often good.",
+            "Consumer-defined interfaces are common and useful.",
+            "Correct. Large implementation-shaped interfaces often create unnecessary coupling."
+          ],
+          "answerReason": "Good interfaces are shaped by the abstraction boundary the caller needs, not by the full concrete type surface."
+        }
+      }
+    },
+    "24_scheduler_gmp": {
+      "title": "Scheduler: G, M, and P",
+      "description": "The Go runtime scheduler maps many goroutines onto a smaller set of OS threads using its own runtime model.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why does Go have its own goroutine scheduler instead of mapping every goroutine 1:1 to an OS thread?",
+          "options": [
+            "Because OS threads cannot run Go code.",
+            "Because lightweight goroutines are intended to be cheaper and more numerous than OS threads.",
+            "Because the runtime forbids parallel execution."
+          ],
+          "explanations": [
+            "Go code can run on OS threads normally.",
+            "Correct. The runtime scheduler exists to support many lightweight goroutines efficiently.",
+            "The runtime supports parallel execution."
+          ],
+          "answerReason": "The point is to let concurrency structure stay cheap and abundant."
+        },
+        "q3": {
+          "question": "Why should a Go developer care about scheduler behavior?",
+          "options": [
+            "Because blocking, wakeups, and goroutine structure can affect throughput and latency in real systems.",
+            "Because scheduler knowledge replaces the language syntax.",
+            "Because the scheduler removes all need for synchronization."
+          ],
+          "explanations": [
+            "Correct. Runtime scheduling affects how concurrent work actually behaves.",
+            "Syntax is unrelated.",
+            "Synchronization is still needed."
+          ],
+          "answerReason": "The runtime model explains why some concurrency patterns scale well and others do not."
+        }
+      }
+    },
+    "25_cgo_unsafe_boundary": {
+      "title": "Unsafe and cgo Boundaries",
+      "description": "Most Go code stays in safe, managed territory. `unsafe` and cgo exist for special cases, but they cross important abstraction boundaries.",
+      "quizzes": {
+        "q1": {
+          "question": "What is the output?"
+        },
+        "q2": {
+          "question": "Why are `unsafe` and cgo considered boundaries rather than normal defaults?",
+          "options": [
+            "Because they only work on Tuesdays.",
+            "Because they remove the Go type system completely at compile time.",
+            "Because they trade some safety or runtime assumptions for low-level interop and control."
+          ],
+          "explanations": [
+            "There is no day-of-week rule.",
+            "They do not erase the whole compiler; they introduce targeted escape hatches.",
+            "Correct. These are deliberate boundary-crossing tools."
+          ],
+          "answerReason": "The power of these tools comes from stepping outside some of Go’s usual guarantees."
+        },
+        "q3": {
+          "question": "What is the main engineering risk when using such boundaries?",
+          "options": [
+            "They make source files shorter.",
+            "They bypass some of the guarantees that normally keep ordinary Go code simple and safe.",
+            "They remove all performance costs."
+          ],
+          "explanations": [
+            "File length is irrelevant.",
+            "Correct. Escape hatches are risky because they weaken normal guarantees.",
+            "These tools do not magically remove all costs."
+          ],
+          "answerReason": "Use boundary-crossing tools deliberately and locally, not as the default architecture."
         }
       }
     }

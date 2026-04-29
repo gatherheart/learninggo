@@ -3,6 +3,7 @@ const EVENT_NAME = "learninggo:progress";
 
 interface Progress {
   completedQuizzes: Record<string, true>;
+  solvedInterview?: Record<string, true>;
 }
 
 function read(): Progress {
@@ -47,4 +48,15 @@ export function isLessonUnlocked(lessonIndex: number, lessons: { id: string; qui
 
 export function resetProgress(): void {
   localStorage.removeItem(KEY);
+}
+
+export function interviewSolved(questionId: string): boolean {
+  return read().solvedInterview?.[questionId] === true;
+}
+
+export function markInterviewSolved(questionId: string): void {
+  const progress = read();
+  progress.solvedInterview ??= {};
+  progress.solvedInterview[questionId] = true;
+  write(progress);
 }
